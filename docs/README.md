@@ -15,6 +15,8 @@ One product, one database, one codebase - delivering a complete school/college l
 | 3 | [Architecture](03-architecture.md) | High-level system architecture and tech stack |
 | 4 | [Database Schema](04-database-schema.md) | Consolidated MySQL schema plan and migration strategy |
 | 5 | [Roadmap](05-roadmap.md) | Phased implementation roadmap |
+| 6 | [Agent Harness Plan](06-agent-harness-plan.md) | Multi-agent harness setup and workstream ownership |
+| 7 | [Task Management](07-task-management.md) | Systematic task registry for scalable agents |
 
 ## Source Systems
 

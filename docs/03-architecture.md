@@ -49,8 +49,8 @@ graph TD
 
 | Tier | Component | Tech | Responsibility |
 |------|-----------|------|----------------|
-| **1. Presentation** | Admin Dashboard | React 18 + Tailwind CSS | Admin/staff operations (SIS + LMS admin) |
-| **1. Presentation** | Public Site / Learner Portal | React 18 + Tailwind CSS | Learner-facing (courses, grades, fees, portal) |
+| **1. Presentation** | Admin Dashboard | React 18 + Tailwind CSS (`admin/`) | Admin/staff operations (SIS + LMS admin) |
+| **1. Presentation** | Public Site / Learner Portal | React 18 + Tailwind CSS (`frontend/`) | Learner-facing (courses, grades, fees, portal) |
 | **2. Application** | Backend | FastAPI (Python 3.11+) | REST API, business logic, RBAC enforcement |
 | **3. Data** | App database | MySQL 8 | Consolidated LMS + SIS schema |
 | **3. Data** | Identity store | Keycloak-managed DB | Users, credentials, roles, sessions, SSO |
@@ -58,16 +58,21 @@ graph TD
 ## 3.4 Module Layer (FastAPI)
 
 ```
-app/
-├── api/v1/
-│   ├── sis/          # students, admissions, attendance, fees, timetable, ...
-│   ├── lms/          # courses, activities, quizzes, gradebook, ...
-│   └── platform/     # enrollment, groups, messaging, calendar, reports, ...
-├── core/             # config, security, RBAC dependencies, auditing
-├── db/               # SQLAlchemy models, migrations (Alembic)
-├── schemas/          # Pydantic request/response models
-├── services/         # business logic
-└── main.py
+backend/
+├── app/
+│   ├── api/v1/
+│   │   ├── sis/          # students, admissions, attendance, fees, timetable, ...
+│   │   ├── lms/          # courses, activities, quizzes, gradebook, ...
+│   │   └── platform/     # enrollment, groups, messaging, calendar, reports, ...
+│   ├── core/             # config, security, RBAC dependencies, auditing
+│   ├── db/               # SQLAlchemy models, migrations (Alembic)
+│   ├── schemas/          # Pydantic request/response models
+│   ├── services/         # business logic
+│   └── main.py
+admin/                    # React admin dashboard
+frontend/                 # React public site / learner portal
+keycloak/                 # Keycloak realm config
+db/                       # consolidated schema + source scripts
 ```
 
 ### Backend modules
@@ -96,8 +101,8 @@ app/
 | Identity / SSO | Keycloak (OIDC) | External IdP, realm roles, self-service |
 | Database | MySQL 8 | Consolidated app schema (user requirement) |
 | Keycloak store | Separate DB (managed by Keycloak) | Isolation from app data |
-| Dashboard | React 18 + Tailwind CSS | Admin/staff SPA |
-| Public site | React 18 + Tailwind CSS | Learner portal / public site |
+| Dashboard | React 18 + Tailwind CSS (`admin/`) | Admin/staff SPA |
+| Public site | React 18 + Tailwind CSS (`frontend/`) | Learner portal / public site |
 | Background jobs | Celery + Redis | Email, notifications, report generation |
 | Object storage | Local/Amazon S3 | Course media, video, file submissions |
 | Cache | Redis | Cache, sessions, job broker |
