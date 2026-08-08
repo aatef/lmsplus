@@ -4,15 +4,17 @@ Phased delivery plan for LMS Plus SIS.
 
 ## 5.1 Phase 0 - Foundation (Weeks 1-2)
 
-**Goal**: Repo structure, tooling, consolidated schema baseline.
+**Goal**: Repo structure, tooling, consolidated schema baseline, identity foundation.
 
-- [ ] Initialize application skeleton (Laravel + Vue 3)
+- [ ] Initialize backend skeleton (FastAPI + SQLAlchemy + Alembic)
+- [ ] Initialize React apps (admin dashboard + public site) with Tailwind
 - [ ] Create `db/source/` and place user-provided OpenEduCat, Open edX, Moodle scripts
 - [ ] Author `db/consolidated/schema.sql` from doc 04
 - [ ] Set up MySQL 8, Redis, object storage dev environment
-- [ ] Auth + RBAC skeleton (`users`, `roles`, `permissions`, `contexts`)
+- [ ] Stand up **Keycloak** (realm, clients, realm roles, JWT validation in FastAPI)
+- [ ] RBAC skeleton (contexts, roles, permissions, user_roles)
 - [ ] CI pipeline (lint, tests, migration check)
-- **Exit criteria**: fresh install migrates consolidated schema cleanly; admin can log in.
+- **Exit criteria**: fresh install migrates consolidated schema; user logs in via Keycloak and calls a protected FastAPI endpoint.
 
 ## 5.2 Phase 1 - SIS Core (Weeks 3-6)
 
@@ -24,8 +26,8 @@ Phased delivery plan for LMS Plus SIS.
 - [ ] Attendance (settings, daily entry, reports)
 - [ ] Timetable (slots, class schedule, conflict checks)
 - [ ] Fees (structures, invoices, payments, receipts, ledger)
-- [ ] Dashboard + reports
-- **Exit criteria**: end-to-end student lifecycle (admission -> enrollment -> attendance -> fees) works in UI.
+- [ ] Admin dashboard: SIS admin screens (students, attendance, fees)
+- **Exit criteria**: end-to-end student lifecycle (admission -> enrollment -> attendance -> fees) works in the dashboard.
 
 ## 5.3 Phase 2 - LMS Core (Weeks 7-10)
 
@@ -36,7 +38,7 @@ Phased delivery plan for LMS Plus SIS.
 - [ ] Question bank + quiz engine
 - [ ] Gradebook (categories, items, aggregation, exports)
 - [ ] Course enrollment + groups
-- [ ] Learner view: enroll, study, submit, view grades
+- [ ] Learner view (public site): enroll, study, submit, view grades
 - **Exit criteria**: a teacher authors a course with a quiz, students enroll, complete, and get grades end-to-end.
 
 ## 5.4 Phase 3 - Collaboration & Completion (Weeks 11-13)
@@ -61,8 +63,8 @@ Phased delivery plan for LMS Plus SIS.
 - [ ] Transport (routes, stops, assignments)
 - [ ] Events + registrations
 - [ ] Reports builder + analytics dashboards
-- [ ] REST API hardening + API tokens
-- [ ] LTI consumer/provider, SSO (OAuth2/SAML), payment gateway
+- [ ] REST API hardening + API tokens (Keycloak service accounts)
+- [ ] LTI consumer/provider, external IdP federation, payment gateway
 - **Exit criteria**: full P0-P1 feature coverage; external integrations work.
 
 ## 5.6 Phase 5 - Data Migration & Polish (Weeks 18-20)

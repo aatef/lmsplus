@@ -22,15 +22,17 @@ We do **not** copy the raw SQL of Moodle, OpenEduCat, or Open edX. Instead we de
 
 ## 4.3 Core Domain Groups
 
-### Identity & Access
+### Identity & Access (app-scoped; authentication lives in Keycloak)
 | Table | Purpose |
 |-------|---------|
-| `users` | Auth, profile, contact |
-| `roles` | Role definitions (student, teacher, admin, parent, staff) |
+| `users` | App-side profile/contact, linked to Keycloak subject id (`kc_subject_id`) |
+| `roles` | Context-based role definitions (student, teacher, admin, parent, staff) |
 | `permissions` | Granular permission catalog |
 | `role_permissions` | Role <-> permission mapping |
 | `user_roles` | Context-based role assignments (context table + context_id) |
 | `contexts` | Site / campus / course / class context hierarchy |
+
+> Authentication, credentials, sessions, and realm-level roles are owned by **Keycloak** in its own database. The app `users` table stores only profile/business data and references the Keycloak user via `kc_subject_id` (UUID). Realm roles in the JWT grant coarse access; app `user_roles` grant context-scoped permissions.
 
 ### Academic Structure (SIS)
 | Table | Purpose |
@@ -200,7 +202,8 @@ erDiagram
 2. **Consolidated schema**: `db/consolidated/schema.sql` - canonical target, generated from this design.
 3. **Migration tooling** (later phase): per-source extractors map each source table to target tables.
 4. **Seed data**: base roles, permissions, activity types, fee heads, demo institution.
-5. **Versioning**: migrations managed by the application framework (Laravel Migrations) in `db/migrations/`.
+5. **Versioning**: migrations managed by **Alembic** (SQLAlchemy) in the FastAPI backend (`backend/alembic/`); `db/consolidated/schema.sql` kept in sync.
+6. **Keycloak realm setup**: realm, clients, realm roles, and seed users configured via a Keycloak realm import file (`.json`) in `keycloak/`.
 
 ## 4.6 Indexing & Integrity Notes
 

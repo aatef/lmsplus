@@ -10,16 +10,16 @@ Build a single, unified education platform that serves as both a **Learning Mana
 | OpenEduCat | SIS/ERP | Admissions, fees, attendance, library, hostel, transport, finance |
 | Open edX | LMS/MOOC | Course authoring (Studio), XBlocks, video delivery, scalable learning |
 
-Instead of deploying three separate products and integrating them, we consolidate all features into **one application backed by one MySQL database**.
+Instead of deploying three separate products and integrating them, we consolidate all features into **one 3-tier application**: a FastAPI backend backed by one MySQL database, with Keycloak single sign-on and two React frontends (admin dashboard + public learner portal).
 
 ## 1.2 Goals
 
-1. **Single sign-on** - one user identity serves as student, learner, teacher, staff, admin, and parent.
+1. **Single sign-on** - Keycloak (OIDC) provides one identity for student, learner, teacher, staff, admin, and parent across all apps.
 2. **Unified data model** - a student record ties together academic, financial, administrative, and learning data in one place.
 3. **Full academic lifecycle** - admission -> enrollment -> attendance -> learning -> assessment -> grading -> certification -> alumni.
 4. **Modern course authoring** - adopt Open edX's structured course authoring (courses > sections > activities) combined with Moodle's rich activity types.
 5. **ERP-grade operations** - fees, payroll, library, hostel, transport managed natively, inspired by OpenEduCat.
-6. **One MySQL database** - a consolidated schema with clean foreign keys, migrations, and backups.
+6. **One MySQL database** - a consolidated app schema with clean foreign keys, migrations, and backups (Keycloak holds identity data in a separate store).
 
 ## 1.3 Target Users
 
@@ -47,6 +47,6 @@ Instead of deploying three separate products and integrating them, we consolidat
 ## 1.6 Success Metrics
 
 - 100% feature coverage across the consolidated feature matrix (see doc 02).
-- Single MySQL schema with no data duplication between LMS and SIS records.
+- Single MySQL app schema with no data duplication between LMS and SIS records; identity isolated in Keycloak.
 - < 500ms p99 API latency for common operations.
-- Role-based access enforced at every endpoint.
+- Role-based access enforced at every endpoint (Keycloak realm roles + app context permissions).

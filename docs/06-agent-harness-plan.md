@@ -6,10 +6,10 @@ Four agent harnesses work on the **same project** in parallel. Each harness has 
 
 | # | Harness | Config File | Model | Workstream |
 |---|---------|-------------|-------|------------|
-| A | Claude Code | `CLAUDE.md` | Claude (cloud) | SIS core |
-| B | OpenAI Codex CLI | `AGENTS.md` | GPT (cloud) | LMS core |
-| C | opencode | `AGENTS.md` + `opencode.json` | Cloud LLM | Platform + integration |
-| D | PI Coder | `AGENTS.md` | Devstral Small 2 (local) | Database schema + migration |
+| A | Claude Code | `CLAUDE.md` | Claude (cloud) | SIS core (backend) |
+| B | OpenAI Codex CLI | `AGENTS.md` | GPT (cloud) | LMS core (backend) |
+| C | opencode | `AGENTS.md` + `opencode.json` | Cloud LLM | Platform + frontend apps |
+| D | PI Coder | `AGENTS.md` | Devstral Small 2 (local) | Database + identity (Keycloak) |
 
 - `AGENTS.md` is the **shared source of truth** for Codex, opencode, and PI Coder.
 - `CLAUDE.md` imports `AGENTS.md` so Claude Code inherits identical rules, plus Claude-specific notes.
@@ -18,19 +18,19 @@ Four agent harnesses work on the **same project** in parallel. Each harness has 
 
 | Agent | Branch | Scope (from docs/02 feature matrix) |
 |-------|--------|--------------------------------------|
-| A (Claude) | `260807-feat-sis-core` | SIS: academic structure, admissions, student records, faculty, attendance, timetable, fees |
-| B (Codex) | `260807-feat-lms-core` | LMS: course authoring, activity engine, quizzes, assignments, gradebook |
-| C (opencode) | `260807-feat-platform` | Platform: RBAC, enrollment, groups, messaging, notifications, calendar, REST API |
-| D (PI Coder) | `260807-feat-db-schema` | `db/consolidated/schema.sql`, migrations, seeders, ER mappings from docs/04 |
+| A (Claude) | `260807-feat-sis-core` | Backend SIS: academic structure, admissions, student records, faculty, attendance, timetable, fees |
+| B (Codex) | `260807-feat-lms-core` | Backend LMS: course authoring, activity engine, quizzes, assignments, gradebook |
+| C (opencode) | `260807-feat-platform` | Backend platform (RBAC, enrollment, messaging, calendar) + **both React apps** (admin dashboard, public site) |
+| D (PI Coder) | `260807-feat-db-schema` | `db/consolidated/schema.sql`, Alembic migrations, seeders, Keycloak realm setup, ER mappings from docs/04 |
 
 ## 6.3 Git Workflow (no conflicts)
 
 1. All agents branch from the **same base** (`main`), using the branch naming convention `YYMMDD-feat-<area>`.
 2. **No agent touches another agent's folder.** Folder ownership:
-   - Agent A: `src/Sis/*`, `resources/js/sis/*`
-   - Agent B: `src/Lms/*`, `resources/js/lms/*`
-   - Agent C: `src/Platform/*`, `resources/js/platform/*`, `routes/*`
-   - Agent D: `db/**`, `database/migrations/**`, `database/seeders/**`
+   - Agent A: `backend/app/api/v1/sis/*`, `backend/app/services/sis/*`
+   - Agent B: `backend/app/api/v1/lms/*`, `backend/app/services/lms/*`
+   - Agent C: `backend/app/api/v1/platform/*`, `dashboard/**`, `site/**` (React apps), `backend/app/core/*` (auth/RBAC deps)
+   - Agent D: `db/**`, `backend/alembic/**`, `backend/app/db/*`, `keycloak/**`
 3. Agents `pull origin main` before starting and `rebase` on merge to keep history linear.
 4. **Rule of thumb**: if a file doesn't belong to your workstream, you do not edit it; open an issue/mention instead.
 5. Every change is merged via **PR** with review, never force-pushed to shared branches.
@@ -40,8 +40,9 @@ Four agent harnesses work on the **same project** in parallel. Each harness has 
 
 | File | Why it conflicts | Resolution |
 |------|------------------|------------|
-| `composer.json` / `package.json` | Dependencies added by multiple agents | Single "dependency owner" = Agent C; others request via issue |
-| `routes/web.php` | Route additions | Split route files per domain: `routes/sis.php`, `routes/lms.php`, `routes/platform.php` |
+| `backend/pyproject.toml` / `requirements.txt` | Dependencies added by multiple agents | Single "dependency owner" = Agent C; others request via issue |
+| `backend/app/main.py` / `router.py` | Router registration | Split routers per domain: `api/v1/sis/router.py`, `api/v1/lms/router.py`, `api/v1/platform/router.py` |
+| `dashboard/package.json` / `site/package.json` | Frontend deps | Owned by Agent C only |
 | `AGENTS.md` / `CLAUDE.md` | Everyone reads them | Only the human/orchestrator edits |
 
 ## 6.5 Local LLM Considerations (Agent D - Devstral Small 2)
@@ -50,6 +51,7 @@ Four agent harnesses work on the **same project** in parallel. Each harness has 
 - Prefer smaller, single-file tasks; long multi-file diffs are error-prone.
 - Keep prompt/instructions deterministic: explicit file paths, explicit acceptance criteria.
 - Use the same `AGENTS.md` as Codex/opencode; add a `docs/07-devstral-notes.md` if local-model guidance diverges.
+- Agent D also owns Keycloak realm config (realm JSON, clients, realm roles) - keep this in small files, validated with `kcadm` locally.
 
 ## 6.6 Task Coordination Protocol
 
@@ -73,5 +75,9 @@ Four agent harnesses work on the **same project** in parallel. Each harness has 
 ├── CLAUDE.md              # Claude Code entry (imports AGENTS.md)
 ├── opencode.json          # opencode-specific settings (optional)
 ├── docs/                  # Planning docs (read-only to agents)
-└── db/                    # Agent D owns this
+├── backend/               # FastAPI app (Agents A/B/C shared, split by api/v1/*)
+├── dashboard/             # React admin dashboard (Agent C)
+├── site/                  # React public site / learner portal (Agent C)
+├── db/                    # Agent D owns this
+└── keycloak/              # Agent D owns this (realm config)
 ```

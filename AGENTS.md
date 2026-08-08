@@ -17,9 +17,11 @@ Read `docs/README.md` first. Key docs:
 
 ## Tech Stack
 
-- PHP 8+ / Laravel, MySQL 8 (single consolidated database), Redis
-- Frontend: Vue 3 + Tailwind
-- REST API (`/api/v1/...`) consumed by the SPA
+- **Backend**: Python 3.11+ / FastAPI, SQLAlchemy 2.0 + Alembic, MySQL 8 (consolidated app DB)
+- **Identity / SSO**: Keycloak (OIDC); backend validates JWT via JWKS
+- **Frontend**: React 18 + Tailwind CSS - two apps: `dashboard/` (admin) and `site/` (public learner portal)
+- **Background jobs**: Celery + Redis
+- REST API (`/api/v1/...`) consumed by both React apps
 
 ## Roles / Workstream Ownership
 
@@ -27,12 +29,12 @@ You are assigned ONE workstream. **Edit only files in your domain.**
 
 | Agent | Workstream | Owns |
 |-------|-----------|------|
-| Agent A (Claude) | SIS core | `src/Sis/*`, `resources/js/sis/*` |
-| Agent B (Codex) | LMS core | `src/Lms/*`, `resources/js/lms/*` |
-| Agent C (opencode) | Platform | `src/Platform/*`, `resources/js/platform/*`, `routes/sis.php|lms.php|platform.php` |
-| Agent D (PI Coder) | Database | `db/**`, `database/migrations/**`, `database/seeders/**` |
+| Agent A (Claude) | SIS core | `backend/app/api/v1/sis/*`, `backend/app/services/sis/*` |
+| Agent B (Codex) | LMS core | `backend/app/api/v1/lms/*`, `backend/app/services/lms/*` |
+| Agent C (opencode) | Platform + Frontend | `backend/app/api/v1/platform/*`, `backend/app/core/*`, `dashboard/**`, `site/**` |
+| Agent D (PI Coder) | Database + Identity | `db/**`, `backend/alembic/**`, `backend/app/db/*`, `keycloak/**` |
 
-Read-only for all agents (human-owned): `docs/`, `AGENTS.md`, `CLAUDE.md`, `composer.json`, `package.json`.
+Read-only for all agents (human-owned): `docs/`, `AGENTS.md`, `CLAUDE.md`, `backend/pyproject.toml`, `dashboard/package.json`, `site/package.json`.
 
 If a task requires touching a file outside your domain, do NOT edit it - raise it with the orchestrator.
 
@@ -45,10 +47,11 @@ If a task requires touching a file outside your domain, do NOT edit it - raise i
 
 ## Code Standards
 
-- Follow existing code style; no debug `console.log` / `dd()` left behind.
+- Follow existing code style; no debug `console.log` / `print()` left behind.
 - No hardcoded secrets; use `.env` / env vars with `.env.example` placeholders.
-- Include Laravel migrations for any schema change; keep consolidated schema in `db/consolidated/schema.sql` in sync (Agent D).
-- Sanitize/validate all inputs; use Laravel authorization (policies/gates) for RBAC.
+- Include Alembic migrations for any schema change; keep consolidated schema in `db/consolidated/schema.sql` in sync (Agent D).
+- Sanitize/validate all inputs; enforce RBAC via FastAPI dependencies (`require_roles` / `require_permission`).
+- Authentication: validate Keycloak JWT on every request; never trust client-supplied identity.
 - `utf8mb4`, `InnoDB` for all tables; follow naming conventions in docs/04.
 
 ## Definition of Done
