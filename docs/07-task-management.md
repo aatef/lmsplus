@@ -65,6 +65,13 @@ graph LR
 4. Agent opens PR; orchestrator marks `review`.
 5. On merge + verification, orchestrator marks `done`.
 
+## 7.4a Sprints
+
+- Work is organized into **sprints**, each mapping to one roadmap phase (e.g., Sprint 1 = Phase 0 Foundation).
+- `tasks/README.md` documents the **current sprint**: goal, task list in dependency order, and exit criteria.
+- Only the orchestrator opens/closes a sprint. A sprint closes when its exit criteria are met and all its tasks are `done`.
+- Tasks not in the current sprint stay `backlog` until their sprint starts.
+
 ## 7.5 Agent Registry (scalable)
 
 ```md

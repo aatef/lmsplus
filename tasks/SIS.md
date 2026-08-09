@@ -1,7 +1,7 @@
 # SIS Tasks (Agent A - Claude Code)
 
 ### SIS-001: Academic structure API - institutions, campuses, departments, programs, batches, classes, sections
-- **Status**: [ ] todo
+- **Status**: [ ] backlog
 - **Priority**: P0
 - **Owner**: Agent A
 - **Depends on**: DB-001

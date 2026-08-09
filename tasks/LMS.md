@@ -1,7 +1,7 @@
 # LMS Tasks (Agent B - Codex)
 
 ### LMS-001: Course authoring API - courses, sections, units, components
-- **Status**: [ ] todo
+- **Status**: [ ] backlog
 - **Priority**: P0
 - **Owner**: Agent B
 - **Depends on**: DB-001
