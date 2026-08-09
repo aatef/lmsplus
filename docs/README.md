@@ -17,6 +17,7 @@ One product, one database, one codebase - delivering a complete school/college l
 | 5 | [Roadmap](05-roadmap.md) | Phased implementation roadmap |
 | 6 | [Agent Harness Plan](06-agent-harness-plan.md) | Multi-agent harness setup and workstream ownership |
 | 7 | [Task Management](07-task-management.md) | Systematic task registry for scalable agents |
+| 8 | [Worker Pool](08-worker-pool.md) | Autonomous pull-based execution across worker nodes |
 
 ## Source Systems
 

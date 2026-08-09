@@ -2,6 +2,8 @@
 
 Systematic task tracking for a **scalable number of agent harnesses** working on one repo. The system is designed so adding agents never requires restructuring — you just register the agent and assign it a workstream scope.
 
+> **Runtime execution**: tasks can additionally be executed by a worker pool that autonomously pulls tasks from a Redis-backed queue (see `docs/08-worker-pool.md`). The `tasks/*.md` registry remains the human-authored source of truth; the queue service adds runtime claim state.
+
 ## 7.1 Core Idea
 
 - Every unit of work is a **task** with a unique ID.

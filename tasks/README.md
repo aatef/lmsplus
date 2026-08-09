@@ -12,6 +12,11 @@ See `docs/07-task-management.md` for the scheme.
 | LMS | `LMS.md` | Agent B |
 | PLT / FE | `PLT.md` | Agent C |
 | DB | `DB.md` | Agent D |
+| QUE | `QUE.md` | Agent E (queue infra) |
+
+## Worker Pool
+
+Tasks are executed by a **pool of worker nodes** that autonomously pull and claim tasks (see `docs/08-worker-pool.md`). The queue service (FastAPI + Redis) provides atomic claiming; any machine can join as a worker at any time.
 
 ## Status Legend
 
